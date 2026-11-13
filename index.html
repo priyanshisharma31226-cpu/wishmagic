@@ -4,139 +4,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#25134d">
-<title>WishMagic - Daily Wishes</title>
-  <link rel="manifest" href="manifest.json">
+<title>WishMagic</title>
+<meta name="theme-color" content="#8b35c9">
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f7f3ff;color:#28213b}
-header{background:linear-gradient(135deg,#25134d,#7545c8);color:white;padding:25px 18px;text-align:center;border-radius:0 0 25px 25px}
-.logo{font-size:40px}
-header h1{margin:5px;font-size:30px}
-header p{margin:8px;font-size:14px}
-.top{display:flex;justify-content:space-between;align-items:center;padding:14px}
-button{cursor:pointer;border:0}
-.lang{background:white;color:#55319b;padding:10px 15px;border-radius:20px;font-weight:bold}
-h2{font-size:20px;margin:15px}
-.categories{display:flex;gap:9px;overflow-x:auto;padding:5px 14px 15px}
-.cat{white-space:nowrap;background:white;color:#56358f;border:1px solid #e2d5fa;padding:11px 15px;border-radius:22px}
-.cat.active{background:#6239aa;color:white}
-#search{display:block;width:calc(100% - 28px);margin:5px 14px 15px;padding:14px;border:1px solid #ddd;border-radius:12px;font-size:16px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:0 14px 25px}
-.card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 3px 12px #25134d12}
-.art{min-height:155px;padding:18px 12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:white;background:linear-gradient(135deg,#f6a6bb,#8d61cf)}
-.art .emoji{font-size:35px}
-.art p{font-size:15px;font-weight:bold;line-height:1.5}
-.card small{display:block;text-align:center;padding:10px 3px 2px;color:#7659a7}
-.share{display:block;background:#6239aa;color:white;border-radius:9px;padding:10px;margin:9px auto 12px;width:85%;font-weight:bold}
-footer{text-align:center;padding:20px;color:#776a8d;font-size:13px}
-.empty{grid-column:1/-1;text-align:center;padding:30px}
+body{margin:0;font-family:Arial;background:#fff5fc;color:#382044;text-align:center}
+header{background:linear-gradient(120deg,#8b35c9,#ec4899);color:white;padding:25px}
+h1{margin:5px;font-size:32px}
+nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:15px}
+button{border:0;border-radius:20px;padding:12px 16px;background:#913bc9;color:white;font-size:14px}
+button:active{opacity:.7}
+.card{margin:12px auto;padding:15px;background:white;border-radius:20px;max-width:420px;box-shadow:0 3px 12px #ddd}
+.card img{width:100%;height:230px;object-fit:cover;border-radius:15px}
+.quote{font-size:21px;font-weight:bold;margin:18px 5px}
+footer{padding:20px;color:#777}
 </style>
 </head>
 <body>
 <header>
-<div class="logo">✨</div>
-<h1>WishMagic</h1>
-<p id="tagline">Spread Happiness Every Day</p>
+<h1>✨ WishMagic ✨</h1>
+<p>Spread Happiness Every Day!</p>
 </header>
 
-<div class="top">
-<strong id="today">Daily Wishes</strong>
-<button class="lang" onclick="toggleLang()" id="language">हिंदी</button>
-</div>
+<nav>
+<button onclick="show('morning')">🌅 Morning</button>
+<button onclick="show('night')">🌙 Night</button>
+<button onclick="show('love')">❤️ Love</button>
+<button onclick="show('birthday')">🎂 Birthday</button>
+<button onclick="show('motivation')">💪 Motivation</button>
+<button onclick="show('festival')">🎉 Festival</button>
+</nav>
 
-<h2 id="heading">Choose Your Wishes 💜</h2>
-<input id="search" placeholder="Search wishes..." oninput="render()">
-
-<div class="categories" id="categories"></div>
-<div class="grid" id="cards"></div>
-
-<footer>✨ WishMagic – Share Love, Spread Happiness ✨</footer>
-
-<script>
-let hindi=false;
-let selected="All";
-
-const wishes=[
-{cat:"Morning",emoji:"🌞",en:"Good Morning! May your day be filled with happiness and success.",hi:"सुप्रभात! आपका दिन खुशियों और सफलता से भरा रहे।"},
-{cat:"Morning",emoji:"🌻",en:"Wake up with a smile and make today beautiful!",hi:"मुस्कान के साथ उठिए और आज के दिन को खूबसूरत बनाइए!"},
-{cat:"Night",emoji:"🌙",en:"Good Night! May your dreams be sweet and peaceful.",hi:"शुभ रात्रि! आपके सपने सुंदर और सुकून भरे हों।"},
-{cat:"Night",emoji:"⭐",en:"Forget your worries and sleep peacefully. Sweet dreams!",hi:"अपनी चिंताएँ भूलकर चैन से सोइए। मीठे सपने!"},
-{cat:"Birthday",emoji:"🎂",en:"Happy Birthday! May all your dreams come true.",hi:"जन्मदिन की हार्दिक शुभकामनाएँ! आपके सभी सपने पूरे हों।"},
-{cat:"Birthday",emoji:"🎉",en:"Wishing you a year full of love, laughter and success!",hi:"आपका नया साल प्यार, हँसी और सफलता से भरा हो!"},
-{cat:"Love",emoji:"❤️",en:"Love makes every moment beautiful. Keep smiling!",hi:"प्यार हर पल को खूबसूरत बनाता है। हमेशा मुस्कुराते रहिए!"},
-{cat:"Love",emoji:"🌹",en:"True friendship is a beautiful gift of life.",hi:"सच्ची दोस्ती जीवन का एक खूबसूरत उपहार है।"},
-{cat:"Motivation",emoji:"🌈",en:"Believe in yourself. Every small step matters.",hi:"खुद पर विश्वास रखिए। हर छोटा कदम मायने रखता है।"},
-{cat:"Motivation",emoji:"💪",en:"Never give up. Your hard work will shine one day.",hi:"कभी हार मत मानिए। आपकी मेहनत एक दिन जरूर रंग लाएगी।"},
-{cat:"Festival",emoji:"🪔",en:"May your life shine with happiness and prosperity!",hi:"आपका जीवन खुशियों और समृद्धि से जगमगाता रहे!"},
-{cat:"Festival",emoji:"🎊",en:"Wishing you peace, joy and wonderful celebrations!",hi:"आपको शांति, आनंद और खुशियों भरे त्योहार की शुभकामनाएँ!"}
-];
-
-const labels={
-All:["All","सभी"],Morning:["Morning","सुप्रभात"],Night:["Night","शुभ रात्रि"],
-Birthday:["Birthday","जन्मदिन"],Love:["Love","प्यार"],Motivation:["Motivation","प्रेरणा"],Festival:["Festival","त्योहार"]
-};
-
-function toggleLang(){
-hindi=!hindi;
-document.getElementById("language").textContent=hindi?"English":"हिंदी";
-document.getElementById("tagline").textContent=hindi?"हर दिन खुशियाँ बाँटें":"Spread Happiness Every Day";
-document.getElementById("heading").textContent=hindi?"अपनी पसंद की शुभकामनाएँ चुनें 💜":"Choose Your Wishes 💜";
-document.getElementById("search").placeholder=hindi?"शुभकामनाएँ खोजें...":"Search wishes...";
-render();
-}
-
-function render(){
-let cats=Object.keys(labels);
-document.getElementById("categories").innerHTML=cats.map(c=>
-`<button class="cat ${selected===c?'active':''}" onclick="choose('${c}')">${labels[c][hindi?1:0]}</button>`
-).join("");
-
-let q=document.getElementById("search").value.toLowerCase();
-let filtered=wishes.filter(w=>(selected==="All"||w.cat===selected)&&
-(w.en.toLowerCase().includes(q)||w.hi.includes(q)||labels[w.cat][0].toLowerCase().includes(q)||labels[w.cat][1].includes(q)));
-
-document.getElementById("cards").innerHTML=filtered.length?filtered.map((w,i)=>`
 <div class="card">
-<div class="art">
-<div class="emoji">${w.emoji}</div>
-<p>${hindi?w.hi:w.en}</p>
+<h2 id="heading">🌅 Good Morning</h2>
+<img id="photo" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=800">
+<p class="quote" id="quote">Every morning is a new beginning. Smile and shine!</p>
+<button onclick="nextWish()">🔄 New Wish</button>
+<button onclick="share()">📲 WhatsApp Share</button>
 </div>
-<small>${labels[w.cat][hindi?1:0]}</small>
-<button class="share" onclick="shareWish(${wishes.indexOf(w)})">${hindi?"शेयर करें ↗":"Share ↗"}</button>
-</div>`).join(""):`<div class="empty">${hindi?"कोई शुभकामना नहीं मिली":"No wishes found"}</div>`;
-}
 
-function choose(c){selected=c;render()}
-
-async function shareWish(i){
-let w=wishes[i];
-let message="✨ WishMagic ✨\n\n"+(hindi?w.hi:w.en)+"\n\nSpread Happiness Every Day!";
-if(navigator.share){
-try{await navigator.share({title:"WishMagic",text:message})}catch(e){}
-}else{
-try{await navigator.clipboard.writeText(message);alert(hindi?"शुभकामना कॉपी हो गई!":"Wish copied!")}catch(e){prompt("Copy your wish:",message)}
-}
-}
-render();
-</script>
-  <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js");
-  });
-}
-  </script>
-  
-<link rel="manifest" href="./manifest.json">
+<footer>Made with ❤️ by WishMagic</footer>
 
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function() {
-    navigator.serviceWorker.register("./service-worker.js");
-  });
+const data={
+morning:[
+["Every morning is a new beginning. Smile and shine!","https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=800"],
+["Rise up and make today beautiful!","https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800"],
+["A fresh day brings fresh hope. Good Morning!","https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800"]
+],
+night:[
+["Close your eyes and welcome sweet dreams. Good Night!","https://images.unsplash.com/photo-1500534623283-312aade485b7?w=800"],
+["May your night be peaceful and beautiful.","https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800"]
+],
+love:[
+["Love makes every moment beautiful. ❤️","https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800"],
+["You are the reason behind my smile!","https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800"]
+],
+birthday:[
+["May your birthday be full of happiness! 🎂","https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800"],
+["Wishing you love, laughter and success!","https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800"]
+],
+motivation:[
+["Believe in yourself. You can achieve anything!","https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=800"],
+["Never give up. Your time will come!","https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800"]
+],
+festival:[
+["May happiness and prosperity fill your home!","https://images.unsplash.com/photo-1604608672516-6f7d3b4a2d3b?w=800"],
+["Celebrate life with love and happiness!","https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800"]
+]
+};
+let current="morning",index=0;
+const titles={morning:"🌅 Good Morning",night:"🌙 Good Night",love:"❤️ Love Wishes",birthday:"🎂 Birthday Wishes",motivation:"💪 Motivation",festival:"🎉 Festival Wishes"};
+function show(type){
+current=type;index=0;update();
+}
+function update(){
+let item=data[current][index];
+document.getElementById("heading").innerText=titles[current];
+document.getElementById("quote").innerText=item[0];
+document.getElementById("photo").src=item[1];
+}
+function nextWish(){
+index=(index+1)%data[current].length;update();
+}
+function share(){
+let msg=document.getElementById("quote").innerText;
+let url="https://wa.me/?text="+encodeURIComponent(msg);
+window.open(url,"_blank");
 }
 </script>
-  
 </body>
 </html>
