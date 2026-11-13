@@ -3,28 +3,36 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WishMagic</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#8b35c9">
+<title>WishMagic</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#fff5fc;color:#382044;text-align:center}
+body{margin:0;background:#fff3fa;color:#382044;font-family:Arial;text-align:center}
 header{background:linear-gradient(120deg,#8b35c9,#ec4899);color:white;padding:25px}
 h1{margin:5px;font-size:32px}
-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:15px}
-button{border:0;border-radius:20px;padding:12px 16px;background:#913bc9;color:white;font-size:14px}
+button{border:0;border-radius:22px;padding:12px 15px;margin:5px;background:#913bc9;color:white;font-weight:bold}
 button:active{opacity:.7}
-.card{margin:12px auto;padding:15px;background:white;border-radius:20px;max-width:420px;box-shadow:0 3px 12px #ddd}
+nav{padding:12px;display:flex;justify-content:center;flex-wrap:wrap}
+.card{background:white;border-radius:20px;padding:15px;margin:12px auto;max-width:430px;box-shadow:0 3px 12px #ddd}
 .card img{width:100%;height:230px;object-fit:cover;border-radius:15px}
-.quote{font-size:21px;font-weight:bold;margin:18px 5px}
-footer{padding:20px;color:#777}
+.quote{font-size:21px;font-weight:bold;line-height:1.5}
+select{padding:10px;border-radius:15px}
 </style>
 </head>
 <body>
+
 <header>
 <h1>✨ WishMagic ✨</h1>
 <p>Spread Happiness Every Day!</p>
 </header>
+
+<p>
+<select id="language" onchange="changeLanguage()">
+<option value="en">English</option>
+<option value="hi">हिंदी</option>
+</select>
+</p>
 
 <nav>
 <button onclick="show('morning')">🌅 Morning</button>
@@ -37,10 +45,12 @@ footer{padding:20px;color:#777}
 
 <div class="card">
 <h2 id="heading">🌅 Good Morning</h2>
-<img id="photo" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=800">
+<img id="photo" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=900" alt="Wish picture">
 <p class="quote" id="quote">Every morning is a new beginning. Smile and shine!</p>
-<button onclick="nextWish()">🔄 New Wish</button>
-<button onclick="share()">📲 WhatsApp Share</button>
+
+<button onclick="nextWish()" id="next">🔄 New Wish</button>
+<button onclick="share()" id="share">📲 WhatsApp</button>
+<button onclick="downloadImage()" id="download">⬇️ Download Image</button>
 </div>
 
 <footer>Made with ❤️ by WishMagic</footer>
@@ -48,50 +58,70 @@ footer{padding:20px;color:#777}
 <script>
 const data={
 morning:[
-["Every morning is a new beginning. Smile and shine!","https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=800"],
-["Rise up and make today beautiful!","https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800"],
-["A fresh day brings fresh hope. Good Morning!","https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800"]
+["Every morning is a new beginning. Smile and shine!","हर सुबह एक नई शुरुआत है। मुस्कुराइए और चमकिए!","https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=900"],
+["Rise up and make today beautiful!","उठिए और आज के दिन को खूबसूरत बनाइए!","https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=900"]
 ],
 night:[
-["Close your eyes and welcome sweet dreams. Good Night!","https://images.unsplash.com/photo-1500534623283-312aade485b7?w=800"],
-["May your night be peaceful and beautiful.","https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800"]
+["Close your eyes and welcome sweet dreams. Good Night!","आँखें बंद करें और मीठे सपनों का स्वागत करें। शुभ रात्रि!","https://images.unsplash.com/photo-1519681393784-d120267933ba?w=900"],
+["May your night be peaceful and beautiful.","आपकी रात शांत और सुंदर हो। शुभ रात्रि!","https://images.unsplash.com/photo-1500534623283-312aade485b7?w=900"]
 ],
 love:[
-["Love makes every moment beautiful. ❤️","https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=800"],
-["You are the reason behind my smile!","https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800"]
+["Love makes every moment beautiful. ❤️","प्यार हर पल को खूबसूरत बना देता है। ❤️","https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=900"]
 ],
 birthday:[
-["May your birthday be full of happiness! 🎂","https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800"],
-["Wishing you love, laughter and success!","https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800"]
+["Wishing you a birthday full of happiness! 🎂","आपका जन्मदिन खुशियों से भरा हो! 🎂","https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=900"]
 ],
 motivation:[
-["Believe in yourself. You can achieve anything!","https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=800"],
-["Never give up. Your time will come!","https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800"]
+["Believe in yourself. You can achieve anything!","खुद पर विश्वास रखिए। आप सब कुछ हासिल कर सकते हैं!","https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=900"]
 ],
 festival:[
-["May happiness and prosperity fill your home!","https://images.unsplash.com/photo-1604608672516-6f7d3b4a2d3b?w=800"],
-["Celebrate life with love and happiness!","https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800"]
+["May happiness and prosperity fill your home!","आपका घर खुशियों और समृद्धि से भरा रहे!","https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=900"]
 ]
 };
-let current="morning",index=0;
-const titles={morning:"🌅 Good Morning",night:"🌙 Good Night",love:"❤️ Love Wishes",birthday:"🎂 Birthday Wishes",motivation:"💪 Motivation",festival:"🎉 Festival Wishes"};
-function show(type){
-current=type;index=0;update();
-}
+
+const titles={
+morning:["🌅 Good Morning","🌅 सुप्रभात"],
+night:["🌙 Good Night","🌙 शुभ रात्रि"],
+love:["❤️ Love Wishes","❤️ प्यार भरे संदेश"],
+birthday:["🎂 Birthday Wishes","🎂 जन्मदिन की शुभकामनाएँ"],
+motivation:["💪 Motivation","💪 प्रेरणा"],
+festival:["🎉 Festival Wishes","🎉 त्योहार की शुभकामनाएँ"]
+};
+
+let current="morning",index=0,lang="en";
+
 function update(){
 let item=data[current][index];
-document.getElementById("heading").innerText=titles[current];
-document.getElementById("quote").innerText=item[0];
-document.getElementById("photo").src=item[1];
+document.getElementById("heading").innerText=titles[current][lang==="en"?0:1];
+document.getElementById("quote").innerText=item[lang==="en"?0:1];
+document.getElementById("photo").src=item[2];
 }
-function nextWish(){
-index=(index+1)%data[current].length;update();
-}
+
+function show(type){current=type;index=0;update()}
+function nextWish(){index=(index+1)%data[current].length;update()}
+function changeLanguage(){lang=document.getElementById("language").value;update()}
+
 function share(){
-let msg=document.getElementById("quote").innerText;
-let url="https://wa.me/?text="+encodeURIComponent(msg);
-window.open(url,"_blank");
+let msg=document.getElementById("heading").innerText+"\n"+document.getElementById("quote").innerText+"\n\n✨ WishMagic";
+window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 }
+
+async function downloadImage(){
+let url=data[current][index][2];
+try{
+let response=await fetch(url);
+let blob=await response.blob();
+let link=document.createElement("a");
+link.href=URL.createObjectURL(blob);
+link.download="WishMagic.jpg";
+link.click();
+URL.revokeObjectURL(link.href);
+}catch(e){
+alert("Image download failed. Please try again.");
+}
+}
+
+update();
 </script>
 </body>
 </html>
