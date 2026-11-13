@@ -1,8 +1,26 @@
-"icons": [
-  {
-    "src": "./icon-192.png",
-    "sizes": "192x192",
-    "type": "image/png",
-    "purpose": "any"
-  }
-]
+
+{
+  "name": "WishMagic",
+  "short_name": "WishMagic",
+  "description": "Daily Wishes and Beautiful Quotes",
+  "start_url": "/wishmagic/",
+  "scope": "/wishmagic/",
+  "display": "standalone",
+  "background_color": "#6A1B9A",
+  "theme_color": "#6A1B9A",
+  "icons": [
+    {
+      "src": "/wishmagic/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/wishmagic/Icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
+
