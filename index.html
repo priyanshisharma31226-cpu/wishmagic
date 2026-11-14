@@ -3,9 +3,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#8b35c9">
+<meta name="description" content="WishMagic - Spread Happiness Every Day">
+
 <title>WishMagic</title>
+
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#fff3fa;color:#382044;font-family:Arial;text-align:center}
@@ -18,14 +25,19 @@ nav{padding:12px;display:flex;justify-content:center;flex-wrap:wrap}
 .card img{width:100%;height:230px;object-fit:cover;border-radius:15px}
 .quote{font-size:21px;font-weight:bold;line-height:1.5}
 select{padding:10px;border-radius:15px}
+#installBtn{background:#e83e8c;font-size:16px}
+footer{padding:20px}
 </style>
 </head>
+
 <body>
 
 <header>
 <h1>✨ WishMagic ✨</h1>
 <p>Spread Happiness Every Day!</p>
 </header>
+
+<button id="installBtn" hidden>📲 Install WishMagic App</button>
 
 <p>
 <select id="language" onchange="changeLanguage()">
@@ -45,12 +57,16 @@ select{padding:10px;border-radius:15px}
 
 <div class="card">
 <h2 id="heading">🌅 Good Morning</h2>
+
 <img id="photo" src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=900" alt="Wish picture">
-<p class="quote" id="quote">Every morning is a new beginning. Smile and shine!</p>
+
+<p class="quote" id="quote">
+Every morning is a new beginning. Smile and shine!
+</p>
 
 <button onclick="nextWish()" id="next">🔄 New Wish</button>
-<button onclick="share()" id="share">📲 WhatsApp</button>
-<button onclick="downloadImage()" id="download">⬇️ Download Image</button>
+<button onclick="share()">📲 WhatsApp</button>
+<button onclick="downloadImage()">⬇️ Download Image</button>
 </div>
 
 <footer>Made with ❤️ by WishMagic</footer>
@@ -99,10 +115,14 @@ document.getElementById("photo").src=item[2];
 
 function show(type){current=type;index=0;update()}
 function nextWish(){index=(index+1)%data[current].length;update()}
-function changeLanguage(){lang=document.getElementById("language").value;update()}
+function changeLanguage(){
+lang=document.getElementById("language").value;
+update();
+}
 
 function share(){
-let msg=document.getElementById("heading").innerText+"\n"+document.getElementById("quote").innerText+"\n\n✨ WishMagic";
+let msg=document.getElementById("heading").innerText+"\n"+
+document.getElementById("quote").innerText+"\n\n✨ WishMagic";
 window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 }
 
@@ -121,7 +141,44 @@ alert("Image download failed. Please try again.");
 }
 }
 
+// PWA SERVICE WORKER
+if("serviceWorker" in navigator){
+window.addEventListener("load",()=>{
+navigator.serviceWorker.register("./service-worker.js")
+.then(()=>console.log("WishMagic Service Worker Ready"))
+.catch(error=>console.log("Service Worker Error:",error));
+});
+}
+
+// INSTALL APP
+let deferredPrompt;
+const installBtn=document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt",(event)=>{
+event.preventDefault();
+deferredPrompt=event;
+installBtn.hidden=false;
+});
+
+installBtn.addEventListener("click",async()=>{
+if(!deferredPrompt){
+alert("Please use Chrome and open the website to install WishMagic.");
+return;
+}
+deferredPrompt.prompt();
+await deferredPrompt.userChoice;
+deferredPrompt=null;
+installBtn.hidden=true;
+});
+
+window.addEventListener("appinstalled",()=>{
+installBtn.hidden=true;
+alert("WishMagic installed successfully!");
+});
+
 update();
 </script>
+
 </body>
-</html>
+  </html>
+  
